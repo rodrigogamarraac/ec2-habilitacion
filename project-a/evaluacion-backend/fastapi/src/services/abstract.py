@@ -1,0 +1,13 @@
+from typing import Protocol
+from uuid import UUID
+from src.models.session_filters import SessionFilters
+from src.models.session_schema import SessionDetailOut, SessionOut, SessionPage
+from src.models.track_schema import TrackListOut
+
+class ISessionService(Protocol):
+    async def get_sessions(self, filters: SessionFilters) -> SessionPage: ...
+    async def get_session(self, session_id: UUID) -> SessionDetailOut | None: ...
+    async def search_sessions(self, search_query: str) -> list[SessionOut]: ...
+
+class ITrackService(Protocol):
+    async def get_tracks(self) -> list[TrackListOut]: ...

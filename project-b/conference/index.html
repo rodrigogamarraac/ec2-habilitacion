@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Symposium — Annual Conference for Practitioners</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700;9..144,900&family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-head">
+    <div class="head-inner">
+      <a href="#" class="brand">
+        <span class="brand-mark">§</span>
+        <span class="brand-name">Symposium</span>
+        <span class="brand-year">MMXXVI</span>
+      </a>
+      <nav class="head-nav">
+        <a href="#programme">Programme</a>
+        <a href="#tracks">Tracks</a>
+        <a href="#speakers">Speakers</a>
+        <a href="#register" class="cta">Register</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="masthead">
+    <div class="masthead-meta">
+      <span>Vol. IX</span>
+      <span>·</span>
+      <span>Annual Edition</span>
+      <span>·</span>
+      <span id="loc-line">Online &amp; in person</span>
+    </div>
+    <h1 class="masthead-title">
+      <span class="line">A gathering for the</span>
+      <span class="line italic">practitioners</span>
+      <span class="line">of the next decade.</span>
+    </h1>
+    <p class="masthead-deck">
+      Three days. Six tracks. Ninety sessions. A programme assembled
+      by a committee of working engineers, researchers, and designers
+      — not by an algorithm.
+    </p>
+    <div class="masthead-rule"></div>
+    <div class="masthead-stats">
+      <div class="stat">
+        <div class="stat-n" id="stat-sessions">—</div>
+        <div class="stat-l">Sessions</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" id="stat-tracks">—</div>
+        <div class="stat-l">Tracks</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" id="stat-speakers">—</div>
+        <div class="stat-l">Speakers</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" id="stat-seats">—</div>
+        <div class="stat-l">Seats available</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="programme" class="programme">
+    <div class="section-head">
+      <h2>The programme</h2>
+      <p class="kicker">Filter by track or search a topic. Times shown in your local timezone unless overridden below.</p>
+    </div>
+
+    <div class="filters">
+      <div class="filter-tracks" id="track-filter"
+           role="tablist" aria-label="Filter sessions by track">
+        <button class="chip is-active" data-track="" role="tab" aria-selected="true">All tracks</button>
+        <!-- track chips inserted by JS -->
+      </div>
+
+      <div class="filter-row">
+        <label class="ftd">
+          <span>Search</span>
+          <input id="q" type="search" placeholder="e.g. databases, ethics, performance…">
+        </label>
+        <label class="ftd">
+          <span>Timezone</span>
+          <select id="tz">
+            <!-- options inserted by JS -->
+          </select>
+        </label>
+        <label class="ftd">
+          <span>Day</span>
+          <select id="day">
+            <option value="">All days</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <ol id="session-list" class="session-list" aria-busy="true">
+      <li class="loading">Loading the programme…</li>
+    </ol>
+  </section>
+
+  <section id="tracks" class="tracks">
+    <div class="section-head">
+      <h2>Tracks</h2>
+      <p class="kicker">Six parallel conversations across three days.</p>
+    </div>
+    <div id="track-grid" class="track-grid"></div>
+  </section>
+
+  <section id="register" class="register">
+    <div class="reg-card">
+      <div class="reg-left">
+        <h2>Registration</h2>
+        <p>
+          Pricing is published per track and adjusts automatically as the
+          conference approaches. Lock in your seats early; group discounts
+          apply for parties of four or more.
+        </p>
+        <a class="btn-primary" href="#programme">Browse sessions</a>
+      </div>
+      <div class="reg-right">
+        <h3>Endpoints in use</h3>
+        <pre class="endpoints">
+GET /api/v1/sessions/
+  ?q=&amp;track=&amp;day=&amp;tz=&amp;page=&amp;page_size=
+  → { count, page, results: [Session] }
+
+GET /api/v1/sessions/{id}
+  → SessionDetail (with speakers + capacity)
+
+GET /api/v1/tracks/
+  → [Track]
+
+Session {
+  id, title, abstract, starts_at, ends_at,
+  track: { id, name, color },
+  speakers: [{ id, name, affiliation }],
+  capacity, registered
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Session detail dialog -->
+  <dialog id="session-modal" class="modal">
+    <article class="modal-paper">
+      <button class="modal-x" data-close aria-label="Close">×</button>
+      <div id="modal-content">Loading…</div>
+    </article>
+  </dialog>
+
+  <footer class="foot">
+    <div class="foot-row">
+      <p>Symposium is curated by an editorial committee.</p>
+      <p>
+        API health:
+        <span id="health-pill" class="pill checking">checking…</span>
+      </p>
+    </div>
+    <p class="colophon">
+      Set in Fraunces &amp; Inter Tight. Hand-built with HTML, CSS, and one
+      small JavaScript file.
+    </p>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

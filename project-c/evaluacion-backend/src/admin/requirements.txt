@@ -1,0 +1,6 @@
+django==6.0
+flake8==6.1.0
+python-dotenv==1.2.1
+psycopg[binary]==3.3.3
+gunicorn==21.1.0
+redis==7.2.0

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mesa Larga — Reservations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="top">
+    <div class="top-inner">
+      <div class="logo">
+        <svg class="logo-mark" viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M14 13v14M20 13v14M26 13v14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M12 19h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="logo-name">Mesa Larga</span>
+      </div>
+      <nav>
+        <a href="#book">Reserve</a>
+        <a href="#menu">Menu</a>
+        <a href="#story">Our story</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <p class="eyebrow">Reservations · Open table system</p>
+      <h1>
+        A long table,<br>
+        <em>set for you.</em>
+      </h1>
+      <p class="lede">
+        Eight courses, four nights a week, twenty-two seats per night.
+        Pick a date, choose your table, tell us what you cannot eat —
+        we'll take care of the rest.
+      </p>
+      <a href="#book" class="cta">Find a table</a>
+    </div>
+    <aside class="hero-card">
+      <div class="card-row">
+        <span class="card-l">Tonight</span>
+        <span class="card-v" id="hero-tonight">checking…</span>
+      </div>
+      <div class="card-row">
+        <span class="card-l">This week</span>
+        <span class="card-v" id="hero-week">—</span>
+      </div>
+      <div class="card-row">
+        <span class="card-l">Average wait</span>
+        <span class="card-v">12 days</span>
+      </div>
+      <div class="card-rule"></div>
+      <p class="card-foot">
+        Walk-ins are accepted at the bar from 18:00, subject to availability.
+      </p>
+    </aside>
+  </section>
+
+  <section id="book" class="book">
+    <div class="book-head">
+      <h2>Find a table</h2>
+      <p class="muted">Pick a date and a party size. Availability is live.</p>
+    </div>
+
+    <form class="finder" id="finder" autocomplete="off">
+      <label class="finder-field">
+        <span>Date</span>
+        <input type="date" id="f-date" required>
+      </label>
+      <label class="finder-field">
+        <span>Time</span>
+        <select id="f-time">
+          <option value="">Any</option>
+          <option value="18:30">18:30</option>
+          <option value="19:00">19:00</option>
+          <option value="19:30">19:30</option>
+          <option value="20:00">20:00</option>
+          <option value="20:30">20:30</option>
+          <option value="21:00">21:00</option>
+        </select>
+      </label>
+      <label class="finder-field">
+        <span>Party</span>
+        <select id="f-party">
+          <option value="2">2 guests</option>
+          <option value="3">3 guests</option>
+          <option value="4" selected>4 guests</option>
+          <option value="6">6 guests</option>
+          <option value="8">8 guests</option>
+        </select>
+      </label>
+      <label class="finder-field">
+        <span>Table type</span>
+        <select id="f-type">
+          <option value="">Any table</option>
+          <!-- table types from API -->
+        </select>
+      </label>
+      <button type="submit" class="finder-btn">Search</button>
+    </form>
+
+    <div id="results" class="results" aria-busy="false">
+      <p class="empty">Choose a date and search above. We'll show what's left.</p>
+    </div>
+  </section>
+
+  <section id="menu" class="menu">
+    <div class="menu-head">
+      <h2>Tonight's menu</h2>
+      <p class="muted">Changes weekly. Substitutions on request.</p>
+    </div>
+    <ul id="menu-list" class="menu-list">
+      <li class="empty">Loading…</li>
+    </ul>
+  </section>
+
+  <section id="story" class="story">
+    <div class="story-grid">
+      <div>
+        <h2>Our story</h2>
+        <p>
+          Mesa Larga began in 2019 as a Sunday-night supper club between
+          friends. We kept the long table when we opened the restaurant —
+          eight strangers, one meal, no menus to choose from. It still feels
+          like the right way to eat.
+        </p>
+      </div>
+      <div>
+        <h3>For developers</h3>
+        <pre class="endpoints">
+GET /api/v1/tables/types/
+  → [{ id, name, seats, description }]
+
+GET /api/v1/reservations/availability/
+  ?date=YYYY-MM-DD&amp;time=HH:MM&amp;party=<int>
+  &amp;table_type=<uuid?>&amp;tz=<IANA?>
+  → [{ time, table_type, table_type_name,
+        seats, available_seats, price_per_seat }]
+
+GET /api/v1/menu/?date=YYYY-MM-DD
+  → [{ id, course, name, description,
+        price, allergens: [str] }]
+
+GET /api/v1/healthz   → { status: "ok" }</pre>
+      </div>
+    </div>
+  </section>
+
+  <dialog id="confirm" class="confirm">
+    <article class="confirm-card">
+      <button class="confirm-x" data-close aria-label="Close">×</button>
+      <h2 id="confirm-title">Reservation</h2>
+      <p id="confirm-sub" class="muted"></p>
+      <div class="confirm-fields">
+        <label><span>Name</span><input id="c-name" type="text" placeholder="Full name"></label>
+        <label><span>Email</span><input id="c-email" type="email" placeholder="you@example.com"></label>
+        <label><span>Allergies / notes</span><textarea id="c-notes" rows="2" placeholder="nut allergy, no shellfish, etc."></textarea></label>
+      </div>
+      <div class="confirm-actions">
+        <button type="button" class="ghost" data-close>Not yet</button>
+        <button type="button" class="primary" id="c-confirm">Hold this table</button>
+      </div>
+      <p class="confirm-note">
+        This is a demo frontend — actual booking is not implemented; the
+        FastAPI service is read-only by spec.  Holding a table here will
+        just close this dialog with a message.
+      </p>
+    </article>
+  </dialog>
+
+  <footer class="foot">
+    <div class="foot-row">
+      <p>© Mesa Larga · Calle de los Almendros 14 · 18:00 – 23:00, Wed – Sat</p>
+      <p>
+        Kitchen:
+        <span id="health-dot" class="dot checking"></span>
+        <span id="health-text">checking…</span>
+      </p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

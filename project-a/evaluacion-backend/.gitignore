@@ -1,0 +1,14 @@
+.env
+*.pyc
+__pycache__/
+.venv/
+venv/
+.idea/
+.vscode/
+*.sqlite3
+staticfiles/
+.pytest_cache/
+.coverage
+htmlcov/
+.claude
+frontend/node_modules

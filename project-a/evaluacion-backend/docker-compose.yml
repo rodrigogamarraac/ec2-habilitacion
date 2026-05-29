@@ -1,0 +1,79 @@
+services:
+  postgres:
+    container_name: conference_db
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - conference_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - conference_net
+
+  redis:
+    container_name: conference_redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - conference_net
+
+  django:
+    container_name: conference_django
+    build: ./django_admin
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - static_files:/app/staticfiles
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - conference_net
+
+  fastapi:
+    container_name: conference_fastapi
+    build: ./fastapi
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - conference_net
+
+  nginx:
+    container_name: conference_nginx
+    build: ./nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html/frontend:ro
+      - static_files:/static:ro
+    depends_on:
+      - django
+      - fastapi
+    networks:
+      - conference_net
+
+volumes:
+  conference_data:
+  static_files:
+
+networks:
+  conference_net:
+    driver: bridge

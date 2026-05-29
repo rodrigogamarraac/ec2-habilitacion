@@ -1,0 +1,5 @@
+fastapi[standard]==0.135.0
+redis==7.2.0
+python-dotenv==1.2.2
+sqlmodel==0.0.38
+asyncpg==0.31.0

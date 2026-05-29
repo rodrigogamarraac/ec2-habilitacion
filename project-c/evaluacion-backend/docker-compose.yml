@@ -1,0 +1,97 @@
+services:
+  database_restaurante:
+    container_name: database_restaurante
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB",]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - private_net
+    expose:
+      - "5432"
+    volumes:
+      - ev2:/var/lib/postgresql/data
+      - ./db-desing:/docker-entrypoint-initdb.d
+  cache_restaurante:
+    container_name: cache_restaurante
+    image: redis:8.4-alpine
+    expose:
+      - "6379"
+    networks:
+      - private_net
+    
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  api:
+    container_name: api
+    build: ./src/app_api
+    healthcheck:
+      test: ["CMD", "curl","-f","http://localhost:8000/api/v1/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    env_file:
+      - .env
+    depends_on:
+      database_restaurante:
+        condition: service_healthy
+      cache_restaurante:
+        condition: service_healthy
+    networks:
+      - public_net
+      - private_net
+    expose:
+      - "8000"
+  admin:
+    container_name: admin
+    build: ./src/admin
+    depends_on:
+      database_restaurante:
+        condition: service_healthy 
+    networks:
+      - public_net
+      - private_net
+    env_file:
+      - .env
+    volumes:
+      - static_volume:/app/staticfiles  
+      - media_volume:/app/media
+    expose:
+      - "8000"
+  proxy:
+    container_name: proxy-restaurante
+    image: nginx:latest
+    depends_on:
+      api:
+        condition: service_healthy
+      admin:
+        condition: service_started
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./src/ui:/usr/share/nginx/html
+      - static_volume:/app/staticfiles   
+      - media_volume:/app/media
+    ports:
+      - "80:80"
+    networks:
+      - public_net
+volumes:
+  ev2:
+  static_volume:
+  media_volume: 
+networks:
+  private_net:
+    internal: true
+  public_net:
+  
